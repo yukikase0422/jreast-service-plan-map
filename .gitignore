@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+
+# 再配布できないフォントの置き場所
+fonts/
+
+# Windows・macOS が作る付随ファイル
+Thumbs.db
+.DS_Store

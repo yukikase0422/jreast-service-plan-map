@@ -70,8 +70,6 @@ LINES = [
  ('joban_local',['北千住','松戸','柏','我孫子','取手'], 1, THIN, None),
  ('musashino',['北朝霞','武蔵浦和','南浦和','南越谷','新松戸','西船橋'], 0, THIN, None),
  ('keiyo',    ['東京','新木場','舞浜','南船橋','海浜幕張','千葉みなと','蘇我'], 0, THIN, None),
- # 千葉〜蘇我は外房線（紫）と内房線（赤）が並走するため、内房線側をずらす
- ('uchibo',   ['千葉','蘇我'], 1, THICK, 'red'),
 ]
 # 23日終日取りやめ、24日以降も当面の間取りやめ（被害甚大）
 BLACK_LINES = [
@@ -89,7 +87,6 @@ PURPLE_LINES = [
 ]
 # 23日始発から運転再開、本数を減らして運転
 RED_LINES = [
- ['蘇我','五井','姉ケ崎'],
  ['千葉','四街道','佐倉'],
  ['成東','横芝','八日市場','旭','松岸','銚子'],
  ['佐倉','酒々井','成田','成田空港'],
@@ -151,6 +148,15 @@ def offset_pts(names, k):
     oc=LineString(pts).offset_curve(k*GAP, join_style='round')
     geoms = list(oc.geoms) if oc.geom_type=='MultiLineString' else [oc]
     return [list(g.coords) for g in geoms if len(g.coords)>=2]
+def uchibo_pts():
+    """内房線（赤）千葉〜姉ケ崎。千葉〜蘇我は外房線（紫）と同じ線路を走るため、
+    線の幅より広い 28px だけ西側（東京湾側）へ並べ、蘇我から五井へ向かう間で本来の位置へ戻す。"""
+    a, b = raw_pts(['千葉'])[0], raw_pts(['蘇我'])[0]
+    dx, dy = b[0]-a[0], b[1]-a[1]; L = math.hypot(dx, dy)
+    nx, ny = -dy/L*28, dx/L*28
+    return [(a[0]+nx, a[1]+ny), (b[0]+nx, b[1]+ny)] + raw_pts(['五井','姉ケ崎'])
+RED_EXTRA = [uchibo_pts()]
+
 def draw_glow(groups, color, alpha, width, blur):
     # 色は固定し、透明度だけをぼかす（RGBA ごとぼかすと透明部の黒が混ざり黒ずむ）
     a = Image.new('L',(W,H),0); ad=ImageDraw.Draw(a)
@@ -162,7 +168,7 @@ def draw_glow(groups, color, alpha, width, blur):
 STATUS_COL = {'red':RED, 'purple':PURPLE, 'black':BLACK}
 SEV = {None:0, 'red':1, 'purple':2, 'black':3}
 # 状態のある区間には各色の帯を敷く。計画の発表がない線区（細線）には帯を敷かない
-draw_glow([pts for key,n,k,w,s in LINES if s=='red' for pts in offset_pts(n,k)] + [raw_pts(n) for n in RED_LINES], RED, 150, 44, 12)
+draw_glow([pts for key,n,k,w,s in LINES if s=='red' for pts in offset_pts(n,k)] + [raw_pts(n) for n in RED_LINES] + RED_EXTRA, RED, 150, 44, 12)
 draw_glow([pts for key,n,k,w,s in LINES if s=='purple' for pts in offset_pts(n,k)] + [raw_pts(n) for n in PURPLE_LINES], PURPLE, 170, 48, 12)
 draw_glow([pts for key,n,k,w,s in LINES if s=='black' for pts in offset_pts(n,k)] + [raw_pts(n) for n in BLACK_LINES], BLACK, 150, 48, 12)
 ld = ImageDraw.Draw(lay)
@@ -173,6 +179,7 @@ for key,names,k,w,s in LINES:
     col = STATUS_COL.get(s, C[key])
     for pts in offset_pts(names,k): segs.append((SEV[s],col,w,pts))
 for L in RED_LINES:    segs.append((1,RED,THICK,raw_pts(L)))
+for pts in RED_EXTRA:  segs.append((1,RED,THICK,pts))
 for L in PURPLE_LINES: segs.append((2,PURPLE,THICK,raw_pts(L)))
 for L in BLACK_LINES:  segs.append((3,BLACK,THICK,raw_pts(L)))
 segs.sort(key=lambda t:t[0])

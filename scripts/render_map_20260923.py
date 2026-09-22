@@ -182,6 +182,9 @@ for sev,col,w,pts in segs:
 
 tx,ty = raw_pts(['取手'])[0]
 halo_text(lay, (tx+40, MAP_TOP+34), '↑水戸方面', F('Medium',24), 'lm', (30,30,30), pad=4)
+# 新木〜木下（約5 km）は紫の区間が短く、両側の赤に埋もれて見えにくいため文字で補う
+f_note = F('Medium',22); NOTE_XY = (462, 536); NOTE_TXT = '新木〜木下は取りやめ'
+halo_text(lay, NOTE_XY, NOTE_TXT, f_note, 'lt', PURPLE, pad=4)
 
 f_lab=F('Medium',30); f_labB=F('Bold',32)
 for n,(anc,dx,dy,em) in LB.items():
@@ -216,7 +219,7 @@ def item(sw, lines):
     for i,t in enumerate(lines):
         ld.text((x0+74,y+(0 if i==0 else 4+i*28)),t,font=f_leg if i else f_legB,fill=(20,20,20),anchor='lm')
     y+= 28*len(lines)+12
-item('black',['終日運転取りやめ','（被害甚大。24日以降も','　当面の間 取りやめ）'])
+item('black',['終日運転取りやめ','（被害甚大。24日以降も','　当面取りやめ見込み）'])
 item('purple',['終日運転取りやめ','（再開の見通しは未定）'])
 item('red',['本数を減らして運転','（23日始発から運転再開）'])
 item('thin',['細線：計画の発表なし','（路線カラー）'])
@@ -249,6 +252,7 @@ boxes=[]
 for n,(anc,dx,dy,em) in LB.items():
     x,y0=P(*S(n)); f=f_labB if em else f_lab
     bb=f.getbbox(n, anchor=anc); boxes.append((n,(x+dx+bb[0]-5,y0+dy+bb[1]-5,x+dx+bb[2]+5,y0+dy+bb[3]+5)))
+nb = f_note.getbbox(NOTE_TXT, anchor='lt'); boxes.append(('注記', (NOTE_XY[0]+nb[0]-5, NOTE_XY[1]+nb[1]-5, NOTE_XY[0]+nb[2]+5, NOTE_XY[1]+nb[3]+5)))
 def ov_(a,b): return not (a[2]<b[0] or b[2]<a[0] or a[3]<b[1] or b[3]<a[1])
 probs=[(a,b) for i,(a,ba) in enumerate(boxes) for b,bb in boxes[i+1:] if ov_(ba,bb)]
 probs+=[(n,'凡例') for n,bb in boxes if ov_(bb,(LX0,LY0,LX1,LY1))]

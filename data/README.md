@@ -5,7 +5,7 @@
 - **権利表示** … © OpenStreetMap contributors
 - **ライセンス** … Open Database License (ODbL) 1.0。全文は <https://opendatacommons.org/licenses/odbl/1-0/>、OpenStreetMap の権利表示の案内は <https://www.openstreetmap.org/copyright> にあります。
 - **取得の方法** … `../scripts/fetch_data.py` が Overpass API（<https://overpass-api.de/>）に問い合わせて取得します。
-- **派生物の扱い** … 2ファイルとも ODbL でいう派生データベースに当たるため、再配布する場合は上記の権利表示とライセンスの提示が必要です。1ページ目の地図画像 `output/JR東日本_運転計画_2026-09-07_ストーリー用_1地図.png` は、このデータベースから作られた Produced Work に当たるため、図中に権利表示とライセンスの案内先を入れてあります。2ページ目の一覧画像はこのデータを用いていません。
+- **派生物の扱い** … 2ファイルとも ODbL でいう派生データベースに当たるため、再配布する場合は上記の権利表示とライセンスの提示が必要です。1ページ目の地図画像（`output/JR東日本_運転計画_<対象日>_ストーリー用_1地図.png`）は、このデータベースから作られた Produced Work に当たるため、図中に権利表示とライセンスの案内先を入れてあります。2ページ目の一覧画像はこのデータを用いていません。
 
 ## land.json — 陸地のポリゴン
 
@@ -22,8 +22,8 @@
 
 - **元になるデータ** … `railway=station` のノード。`scripts/fetch_data.py` が駅名で抽出します。
 - **加工の内容** … 同名の駅が複数ある場合は運行者・ネットワークのタグに JR を含むものを優先し、その座標の平均を採っています。値は `[経度, 緯度, 一致したノード数, うち JR と判定した数]` の4要素です。
-- **Nominatim で補った駅** … 姉ケ崎・布佐・新木の3駅は、2026年9月22日に Overpass API が応答しなかったため、`scripts/fetch_stations_nominatim.py` で Nominatim（<https://nominatim.openstreetmap.org/>）の検索結果の先頭（駅または駅舎の要素）の座標を採りました。出所は同じ OpenStreetMap で、条件も同じ ODbL 1.0 です。この3駅は後ろ2要素を `1, 1` としています。
+- **Nominatim で補った駅** … 姉ケ崎・布佐・新木の3駅は、2026年9月22日に Overpass API が応答しなかったため、`scripts/fetch_stations_nominatim.py` で Nominatim（<https://nominatim.openstreetmap.org/>）の検索結果の先頭（駅または駅舎の要素）の座標を採りました。2026年9月25日に加えた榎戸も同じ方法によります。出所は同じ OpenStreetMap で、条件も同じ ODbL 1.0 です。これらの駅は後ろ2要素を `1, 1` としています。
 
 ## 路線カラー
 
-`scripts/render_map.py` と `scripts/render_list.py` に埋め込んである色コードは、Wikipedia「日本の鉄道ラインカラー一覧」から2026年9月6日に取得したものです（<https://ja.wikipedia.org/wiki/日本の鉄道ラインカラー一覧>）。同記事の本文は [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.ja) で提供されています。水郡線と水戸線は同記事に記載がないため灰色としました。
+`scripts/render_map_<対象日>.py` と `scripts/render_list_<対象日>.py` に埋め込んである色コードは、Wikipedia「日本の鉄道ラインカラー一覧」から2026年9月6日に取得したものです（<https://ja.wikipedia.org/wiki/日本の鉄道ラインカラー一覧>）。同記事の本文は [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.ja) で提供されています。水郡線と水戸線は同記事に記載がないため灰色としました。
